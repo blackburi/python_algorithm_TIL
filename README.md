@@ -40,3 +40,8 @@
 # SOFTEER
 * [level2](./softeer/level2/)
 * [level3](./softeer/level3/)
+
+
+# SWEA
+* [A형(advanced)](./SWEA/A/)
+* [B형(professional)](./SWEA/B/)
