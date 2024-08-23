@@ -30,7 +30,7 @@ def run():
 
 
 if __name__ == '__main__':
-    # sys.stdin = open('sample_input.txt', 'r')
+    sys.stdin = open('sample_input.txt', 'r')
     TC, MARK = map(int, input().split())
 
     for testcase in range(1, TC + 1):
