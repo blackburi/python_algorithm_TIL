@@ -4,10 +4,10 @@ from collections import deque
 def init(N:int, mRange:int, mMap:List[List[int]]) -> None:
     # 지도의 크기, 최대 이동 가능 거리, 지도
 
-    global n, length, mat, location
+    global n, move, mat, location
 
     n = N
-    length = mRange
+    move = mRange
     mat = mMap
 
     # 충전소의 위치와 번호를 저장 {mID : (x, y)}
@@ -21,55 +21,53 @@ def add(mID:int, mRow:int, mCol:int)-> None:
     return
 
 def distance(mFrom:int, mTo:int)-> int:
-    dir = (
-        (0, 1),
-        (1, 0),
-        (-1, 0),
-        (0, -1)
-    )
-
     start_x, start_y = location[mFrom]
     end_x, end_y = location[mTo]
 
-    # 방문 체크
-    # (이동 가능 거리, 총 이동거리) 형태로 저장
+    directions = ((0, 1), (1, 0), (-1, 0), (0, -1))
+
+    # (x, y, 이동 가능 거리, 총 이동 거리) 형태로 저장
+    q = deque([(start_x, start_y, move, 0)])
+    # 방문 체크, 대여소의 경우 2번 방문할 필요가X -> (-1, -1)로 방문 체크
     visited = [[(0, 0) for _ in range(n)] for _ in range(n)]
 
-    # 이동 가능한 곳 (x, y, 이동 가능 거리, 총 이동 거리)를 계산
-    q = deque([(start_x, start_y, length, 0)])
+    visited[start_x][start_y] = (-1, -1)
 
     while q :
         x, y, l, total = q.popleft()
         
-        # 더이상 이동이 불가능한 경우
+        # 더이상 이동이 불가한 경우
         if l == 0 :
             continue
 
-        for dx, dy in dir :
-            # 지도 범위 안에 있다면
-            if 0 < x+dx < n and 0 < y+dy < n and mat[x+dx][y+dy] != 1 :
-                # 전기차 대여소 도착하는 경우
+        for dx, dy in directions :
+            # 지도 내에서 이동 가능한 경우
+            if 0 <= x+dx < n and 0 <= y+dy < n and mat[x+dx][y+dy] != 1 :
+                # 대여소에 도착하는 경우
                 if mat[x+dx][y+dy] >= 10 :
-                    # 목적지에 도착한 경우
+                    # 최종 목적지에 도착하는 경우
                     if x+dx == end_x and y+dy == end_y :
-                        return total+1
-                    # 같은 대여소를 2번 방문할 필요 없음
-                    if visited[x+dx][y+dy] != (0, 0) :
+                        return total + 1
+                    # 최종 목적지가 아닌 대여소에 도달하는 경우
+                    # 똑같은 대여소를 2번 방문할 필요 X
+                    if visited[x+dx][y+dy] == (-1, -1) :
                         continue
-
-                    # 위치를 q에 삽입
-                    q.append((x+dx, y+dy, l-1, total+1))
-                    # 대여소 방문처리
-                    visited[x+dx][y+dy] = (l-1, total+1)
-                # 한번도 방문하지 않은곳
+                    # 대여소 방문 처리
+                    visited[x+dx][y+dy] = (-1, -1)
+                    # q에 추가
+                    q.append((x+dx, y+dy, move, total+1))
+                # 방문하지 않은 통로에 도착하는 경우
                 elif visited[x+dx][y+dy] == (0, 0) :
+                    # 방문 처리
                     visited[x+dx][y+dy] = (l-1, total+1)
+                    # q에 추가
                     q.append((x+dx, y+dy, l-1, total+1))
-                # 이미 한번 방문 한 곳(이동 가능한 거리가 더 많이 남아야 갱신)
+                # 방문한 통로에 도착하는 경우
                 else :
-                    # 기존 방문했을 때보다 이동 가능 거리가 더 멀때만 갱신
-                    before_length, _ = visited[x+dx][y+dy]
-                    if l-1 > before_length :
+                    # 이동 가능 거리가 더 먼 경우에만 갱신
+                    if l-1 > visited[x+dx][y+dy][0] :
+                        # 방문 처리 갱신
                         visited[x+dx][y+dy] = (l-1, total+1)
+                        # q에 추가
                         q.append((x+dx, y+dy, l-1, total+1))
     return -1
