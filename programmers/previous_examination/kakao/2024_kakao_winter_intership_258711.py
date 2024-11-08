@@ -1,3 +1,5 @@
+# 도넛과 막대 그래프
+
 def solution(edges):
     # 생성 정점, 도넛, 막대, 8자
     answer = [0, 0, 0, 0]
