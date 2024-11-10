@@ -1,4 +1,5 @@
 # 225. Implement Stack using Queues
+
 from collections import deque
 
 class MyStack:
