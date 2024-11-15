@@ -16,7 +16,7 @@ def cal(r, c) :
     num = (tmp*2-1)**2 + 1
 
     if r == tmp :
-        return num + tmp*7 + c - 1
+        return num + tmp * 7 + c - 1
     elif c == -tmp :
         return num + tmp * 5 + r - 1
     elif r == -tmp :
