@@ -1,50 +1,46 @@
 # 넴모넴모 (Easy)
 
-# 좌 -> 우, 상 -> 하 순서대로 배열
-# 네모네모로 지워지지 않는 경우를 계속 count
+## python으로 풀리지 않음(시간초과) -> pypy로는 통과
+## 실제 시험에서는 이런 경우 없음 : 이런 경우는 pypy로 제출하여도 무방
+## 알아둘 것 : pypy는 python보다 약 4.8배 빠름
+## 마지막 main함수를 활용하면 조금 더 빠름
 
 import sys
 input = sys.stdin.readline
-sys.setrecursionlimit(10**6)
 
 n, m = map(int, input().split())
+# index를 맞춰 주기 위해서
+matrix = [[0]*(m+1) for _ in range(n+1)]
 
 ans = 0
 
-grid = [[0]*m]*n
-
-# 좌 -> 우, 상 -> 하 순서대로 네모 배열
-# (a, b)를 확인하고 싶다면 (a-1, b-1), (a-1, b), (a, b-1) 확인
-def check_nemo(a, b, n, m) :
-    if 0 <= a-1 and a < n and 0 <= b-1 and b < m :
-        if grid[a-1][b-1] and grid[a-1][b] and grid[a][b-1] :
-            # 둘 수 없음
-            return False
-    # 둘 수 있음
-    return True
-
-def dfs(a, b, n, m) :
+def dfs(x, y) :
     global ans
-    if a == n-1 and b == m-1 :
+
+    # matrix 행, 열의 끝까지 간 경우
+    if (x, y) == (n+1, 1) :
         ans += 1
         return
+    
+    # matrix 행의 끝까지 간 경우
+    if y == m :
+        nx, ny = x+1, 1
+    # 그 외의 경우
+    else :
+        nx, ny = x, y+1
 
-    if b+1 < m :
-        can = check_nemo(a, b+1, n, m)
-        if can is True :
-            dfs(a, b+1, n, m)
-            grid[a][b+1] = 1
-            dfs(a, b+1, n, m)
-            grid[a][b+1] = 0
-        else :
-            dfs(a, b+1, n, m)
-    else : # b+1 >= m 즉 b == m-1
-        dfs(a+1, 0, n, m)
-        grid[a+1][b] = 1
-        dfs(a+1, 0, n, m)
-        grid[a+1][b] = 0
+    # 현재 위치(x, y)에 넣을 수 있는 경우
+    if matrix[x][y-1] == 0 or matrix[x-1][y] == 0 or matrix[x-1][y-1] == 0 :
+        matrix[x][y] = 1
+        dfs(nx, ny)
+        matrix[x][y] = 0
 
-dfs(0, 0, n, m)
-grid[0][0] = 1
-dfs(0, 0, n, m)
-print(ans)
+    # 현재 위치(x, y)를 넣지 않는 경우
+    dfs(nx, ny)
+
+def main() :
+    dfs(1, 1)
+    print(ans)
+
+if __name__ == "__main__" :
+    main()
