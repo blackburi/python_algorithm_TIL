@@ -21,32 +21,33 @@ for i in range(n) :
         if row[j] == 1 :
             home_x = i
             home_y = j
-
         if row[j] == 2 :
             # x, y, 방문 check
-            mints.append([i, j, 0])
-print(mints)
+            mints.append([i, j, False])
+
 # (x, y), 체력, 민트초코의 수
 def dfs(x:int, y:int, stamina:int, cnt:int) :
     global ans
 
-    # 집으로 갈 수 있는 경우
-    if x == home_x and y == home_y :
-        ans = max(ans, cnt)
-        return
-    
     for mint in mints :
-        # 방문하지 않고, 갈 수 있는 민트 초코
-        if mint[2] == 0 and abs(mint[0]-x)+abs(mint[1]-y) <= stamina :
-            # 방문하는 경우
-            mint[2] = 1
-            new_stamina = stamina + h - (abs(mint[0]-x)+abs(mint[1]-y))
-            # stamina는 초기 체력 이상으로 올라갈 수 없음
-            new_stamina = min(m, new_stamina)
-            dfs(mint[0], mint[1], new_stamina, cnt+1)
-            # 방문하지 않는 경우
-            mint[2] = 0
+        # 해당 민트 초코까지의 거리
+        dist = abs(mint[0]-x) + abs(mint[1]-y)
+
+        # 갈 수 없는 경우
+        if dist > stamina :
             continue
+
+        # 아직 방문하지 않은 경우
+        if mint[2] is False :
+            # 방문 처리
+            mint[2] = True
+            new_stamina = stamina + h - dist
+            dfs(mint[0], mint[1], new_stamina, cnt+1)
+            mint[2] = False
+
+    # 집으로 갈 수 있는 경우
+    if stamina >= abs(x-home_x)+abs(y-home_y) :
+        ans = max(ans, cnt)
 
 
 dfs(home_x, home_y, m, 0)
