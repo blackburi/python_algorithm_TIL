@@ -42,6 +42,7 @@ for i in range(1, n+1) :
 ans = 0
 
 for party in parties :
+    # member가 사실을 알고 있다면 break, 모든 파티원이 사실을 모른다면 +1
     for mem in party :
         if parents[mem] == 0 :
             break
